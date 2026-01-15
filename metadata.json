@@ -1,0 +1,7 @@
+{
+  "name": "Kebab Compass",
+  "description": "Navigate to the nearest and best kebab spots with AI-powered recommendations.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
