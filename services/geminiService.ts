@@ -14,14 +14,19 @@ export const findKebabs = async (coords: Coordinates): Promise<KebabPlace[]> => 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Find the absolute SINGLE best rated kebab or shawarma place near me (Lat: ${coords.latitude}, Lng: ${coords.longitude}). 
-      I need the following details in this exact format:
-      Name: [Name of Place]
-      Address: [Street Address, City]
-      Distance: [Approximate distance in km from my location, just the number and unit]
-      Reason: [Short 1 sentence spicy description]
+      contents: `Find the strictly NEAREST kebab or shawarma place to these exact coordinates: (Lat: ${coords.latitude}, Lng: ${coords.longitude}). 
       
-      If you find multiple good ones, just pick the #1 best one.`,
+      CRITICAL INSTRUCTIONS:
+      1. Prioritize DISTANCE above all else. Find the spot closest to the coordinates provided.
+      2. Do not pick a famous place far away. Pick the local one right next to the user.
+      3. I need the following details in this exact format:
+      
+      Name: [Name of Place]
+      Address: [Street Address]
+      Distance: [Distance in meters or km]
+      Reason: [Why it's the closest/best choice]
+      
+      Just provide the single closest location.`,
       config: {
         tools: [{ googleMaps: {} }],
         toolConfig: {
@@ -32,7 +37,7 @@ export const findKebabs = async (coords: Coordinates): Promise<KebabPlace[]> => 
             }
           }
         },
-        temperature: 0.7,
+        temperature: 0.5, // Lower temperature for more deterministic/factual location results
       },
     });
 
@@ -77,7 +82,7 @@ export const findKebabs = async (coords: Coordinates): Promise<KebabPlace[]> => 
             name: name,
             address: addressMatch ? addressMatch[1].trim() : "",
             distance: distanceMatch ? distanceMatch[1].trim() : "N/A",
-            description: reasonMatch ? reasonMatch[1].trim() : "Highly recommended.",
+            description: reasonMatch ? reasonMatch[1].trim() : "Nearest confirmed location.",
             uri: uri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' ' + (addressMatch ? addressMatch[1] : ''))}`
         });
     }

@@ -54,9 +54,10 @@ const App: React.FC = () => {
     };
 
     // Request high accuracy, strictly use real GPS
+    // Increased timeout to 15s to allow for precise satellite lock
     navigator.geolocation.getCurrentPosition(success, error, {
       enableHighAccuracy: true,
-      timeout: 10000, 
+      timeout: 15000, 
       maximumAge: 0
     });
 
